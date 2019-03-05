@@ -6,6 +6,9 @@
 package analisis.de.imagenes;
 
 import static Expansion.expansionImage.expansionExponencial;
+import static Expansion.expansionImage.expansionLineal;
+import static Expansion.expansionImage.expansionLogaritmica;
+import static Expansion.expansionImage.miExpansion;
 import GUI.JFrameImagen;
 import io.ImageManager;
 import java.awt.Image;
@@ -25,15 +28,26 @@ public class AnalisisDeImagenes {
     //Histograma e imagnees con expancion se ven mas brillantes -----------------
          Image imagen = ImageManager.openImage();
         JFrameImagen frame1 = new JFrameImagen(imagen);
-        Image grises = EscalaGrises.generarImagenEnGrises(imagen);
-        JFrameImagen frame2 = new JFrameImagen(grises);
-        HistogramaFrecuencias histo = new HistogramaFrecuencias(grises);
+        //Image grises = EscalaGrises.generarImagenEnGrises(imagen);
+        //JFrameImagen frame2 = new JFrameImagen(grises);
+       // Image negativo = generarImagenEnNegativo(imagen);
+        //JFrameImagen frame4 = new JFrameImagen(negativo);        
+        HistogramaFrecuencias histo = new HistogramaFrecuencias(imagen);
         histo.graficarHistogramasRGB();
-       
-        Image contraste = expansionExponencial(0.01,grises);
-        JFrameImagen frame3 = new JFrameImagen(contraste);
-        HistogramaFrecuencias histo2 = new HistogramaFrecuencias(contraste);
-        histo2.graficarHistogramasRGB();
+       Image contraste3= expansionLogaritmica(5,imagen);
+       Image contraste4 =expansionLineal(0.0,255.1,imagen);    
+        Image contraste1 = expansionExponencial(0.01,imagen);
+        Image contraste2 = miExpansion(50,imagen);
+       JFrameImagen frame2 = new JFrameImagen(contraste1);
+       JFrameImagen frame3 = new JFrameImagen(contraste2);
+       JFrameImagen frame4 = new JFrameImagen(contraste3);
+       JFrameImagen frame5 = new JFrameImagen(contraste4);
+        
+        
+        
+        //JFrameImagen frame3 = new JFrameImagen(contraste);
+        //HistogramaFrecuencias histo2 = new HistogramaFrecuencias(contraste);
+        //histo2.graficarHistogramasRGB();
         
         System.out.println();
         

@@ -1,4 +1,4 @@
-/*
+  /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -83,6 +83,22 @@ public class expansionImage {
         
         }
         return -1;
+    }
+    public static Image miExpansion(int n, Image imagenOriginal){
+         BufferedImage bi = ImageManager.toBufferedImage(imagenOriginal);
+        // recorremos la imagen 
+        for(int x=0; x<bi.getWidth();x++){
+            for (int y=0;y<bi.getHeight();y++){
+            // extraer los valores por canal
+            Color color = new Color(bi.getRGB(x, y));
+            int r = (int)validarRango(color.getRed()+1*(Math.sin(2*color.getRed()))*(Math.cos(255)/Math.log(color.getRed()))+n);
+            int g = (int)validarRango(color.getGreen()+1*(Math.sin(2*color.getGreen()))*(Math.cos(255)/Math.log(color.getGreen()))+n);
+            int b = (int)validarRango(color.getBlue()+1*(Math.sin(2*color.getBlue()))*(Math.cos(255)/Math.log(color.getBlue()))+n);
+            color = new Color(r, g, b);
+            bi.setRGB(x, y, color.getRGB());
+            }
+        }
+        return ImageManager.toImage(bi);
     }
     public static double validarRango(double valor){
         if(valor>255)return 255;
