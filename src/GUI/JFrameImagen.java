@@ -21,7 +21,7 @@ public class JFrameImagen extends javax.swing.JFrame {
         initComponents();
         // agregamos la imagen como icono en el jlabelimagen
         this.jLabelImagen.setIcon(new ImageIcon(imagenOriginal));
-        setVisible(true);
+        
     }
 
     /**
