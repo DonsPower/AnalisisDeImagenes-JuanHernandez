@@ -18,7 +18,7 @@ import muestreo.HistogramaFrecuencias;
 import static muestreo.Negativos.generarImagenEnNegativo;
 import muestreo.Umbralizacion;
 
-/**
+/**q 
  *
  * @author Roberto Cruz Leija
  */

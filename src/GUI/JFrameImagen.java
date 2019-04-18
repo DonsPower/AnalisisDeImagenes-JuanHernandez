@@ -21,6 +21,7 @@ public class JFrameImagen extends javax.swing.JFrame {
         initComponents();
         // agregamos la imagen como icono en el jlabelimagen
         this.jLabelImagen.setIcon(new ImageIcon(imagenOriginal));
+        setVisible(true);
         
     }
 
@@ -43,13 +44,13 @@ public class JFrameImagen extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabelImagen)
-                .addGap(0, 633, Short.MAX_VALUE))
+                .addGap(0, 411, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabelImagen)
-                .addGap(0, 281, Short.MAX_VALUE))
+                .addGap(0, 383, Short.MAX_VALUE))
         );
 
         pack();

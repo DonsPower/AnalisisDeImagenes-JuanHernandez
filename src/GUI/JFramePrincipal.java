@@ -5,12 +5,76 @@
  */
 package GUI;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import javax.imageio.ImageIO;
+import muestreo.Umbralizacion;
+import muestreo.centroDeMasa;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.imgcodecs.Imgcodecs;
+
 /**
  *
  * @author Roberto Cruz Leija
  */
 public class JFramePrincipal extends javax.swing.JFrame {
 
+    //Definitions
+         private DaemonThread myThread = null;
+        int count = 0;
+        VideoCapture webSource = null;
+
+        Mat frame = new Mat();
+        MatOfByte mem = new MatOfByte();
+    //Class start
+        class DaemonThread implements Runnable
+    {
+    protected volatile boolean runnable = false;
+
+    @Override
+    public  void run()
+    {
+        synchronized(this)
+        {
+            while(runnable)
+            {
+                if(webSource.grab())
+                {
+		    	try
+                        {
+                            webSource.retrieve(frame);
+			    Imgcodecs.imencode(".bmp", frame, mem);
+			    Image im = ImageIO.read(new ByteArrayInputStream(mem.toArray()));
+                            Image binaria = centroDeMasa.umbralizacionMasa(120,im);
+			    BufferedImage buff = (BufferedImage) im;
+                            
+			    Graphics g=jPanel1.getGraphics();
+
+			    if (g.drawImage(buff, 0, 0, getWidth(), getHeight() -150 , 0, 0, buff.getWidth(), buff.getHeight(), null))
+			    
+			    if(runnable == false)
+                            {
+			    	System.out.println("Going to wait()");
+			    	this.wait();
+			    }
+			 }
+			 catch(Exception ex)
+                         {
+			    System.out.println("Error");
+                         }
+                }
+            }
+        }
+     }
+   }
+    
+    
+    
     /**
      * Creates new form JFramePrincipal
      */
@@ -27,26 +91,94 @@ public class JFramePrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        init = new javax.swing.JButton();
+        stop = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 462, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 333, Short.MAX_VALUE)
+        );
+
+        init.setText("Init");
+        init.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                initActionPerformed(evt);
+            }
+        });
+
+        stop.setText("Stop");
+        stop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(87, 87, 87)
+                .addComponent(init, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(stop, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(137, 137, 137))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(init)
+                    .addComponent(stop))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void initActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initActionPerformed
+        // Bottom init
+            webSource =new VideoCapture(0); // Camara por default
+            myThread = new DaemonThread(); //Creamos el objeto thread 
+            Thread t = new Thread(myThread); // Inicialisamos
+            t.setDaemon(true);
+            myThread.runnable = true;
+            t.start();
+            init.setEnabled(false);  //start button
+            stop.setEnabled(true);  // stop button
+    }//GEN-LAST:event_initActionPerformed
+
+    private void stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopActionPerformed
+        // Stop botton
+        myThread.runnable = false;
+            stop.setEnabled(false);   
+            init.setEnabled(true);
+            
+            webSource.release();	
+    }//GEN-LAST:event_stopActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME); //libreria nativa
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -72,6 +204,7 @@ public class JFramePrincipal extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+           
             public void run() {
                 new JFramePrincipal().setVisible(true);
             }
@@ -79,5 +212,8 @@ public class JFramePrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton init;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton stop;
     // End of variables declaration//GEN-END:variables
 }

@@ -28,6 +28,7 @@ public class Umbralizacion {
             
             }
         }
+      
        return ImageManager.toImage(bi);
     }
 }
