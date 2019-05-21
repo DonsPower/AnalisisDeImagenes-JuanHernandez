@@ -10,8 +10,12 @@ import static Expansion.expansionImage.expansionLineal;
 import static Expansion.expansionImage.expansionLogaritmica;
 import static Expansion.expansionImage.miExpansion;
 import GUI.JFrameImagen;
+import frecuencias.FFTCalculo;
+import frecuencias.FiltroIdealPasaBajas;
+import frecuencias.Gestor;
 import io.ImageManager;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import muestreo.Convolucion;
 import muestreo.EscalaGrises;
 import muestreo.HistogramaFrecuencias;
@@ -26,19 +30,35 @@ public class AnalisisDeImagenes {
 
     
     public static void main(String[] args) {
+//          FILTROS PASABAJAS Y PASAALTAS.
 
+       BufferedImage bi = ImageManager.toBufferedImage(ImageManager.openImage());
+         JFrameImagen frame1 = new JFrameImagen(bi);  
+         
+         Gestor gestor = new Gestor(bi);
+         FiltroIdealPasaBajas al=new FiltroIdealPasaBajas(512,512,50);
+         al.generar();
+         FFTCalculo fft = new FFTCalculo();
+         System.out.println();
+         JFrameImagen frame2 = new JFrameImagen(ImageManager.toImage(gestor.obtenerImagenFrecuencias(true)));  
+          JFrameImagen frame3 = new JFrameImagen(ImageManager.toImage(gestor.obtenerImagenEspacial()));
+        
+        
+        
+        
+        
         //Agregacion de la convoluciojn
-        Image imagen = ImageManager.openImage();
-        JFrameImagen frame1 = new JFrameImagen(imagen);
-        //double kernel [][] = new double[][]{{-2,-1,0},{-1,1,1},{0,1,2}};
-        // creamos mascara de Laplace
-     double[][] laplace = {{0.0, 1.0, 0.0}, {1.0, -4.0, 1.0}, {0.0, 1.0, 0.0}};
-        //double kernel2 [][] = new double[][]{{1,1,1,1,1},{1,4,4,4,1},{1,4,12,4,1},{1,4,4,4,1},{1,1,1,1,1}};
-        Convolucion convo = new Convolucion(imagen);
-        Image nueva = convo.aplicar(laplace, 1);
-        
-        
-        JFrameImagen frame2 = new JFrameImagen(nueva);
+//        Image imagen = ImageManager.openImage();
+//        JFrameImagen frame1 = new JFrameImagen(imagen);
+//        double kernel [][] = new double[][]{{-2,-1,0},{-1,1,1},{0,1,2}};
+//     //    creamos mascara de Laplace
+//     double[][] laplace = {{0.0, 1.0, 0.0}, {1.0, -4.0, 1.0}, {0.0, 1.0, 0.0}};
+//        double kernel2 [][] = new double[][]{{1,1,1,1,1},{1,4,4,4,1},{1,4,12,4,1},{1,4,4,4,1},{1,1,1,1,1}};
+//        Convolucion convo = new Convolucion(imagen);
+//        Image nueva = convo.aplicar(laplace, 1);
+//        
+//        
+//        JFrameImagen frame2 = new JFrameImagen(nueva);
          
        
     //System.out.println();
