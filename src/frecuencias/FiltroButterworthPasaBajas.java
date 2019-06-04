@@ -9,7 +9,7 @@ import java.awt.Color;
 
 /**
  *
- * @author Roberto Cruz Leija
+ * @author Dons
  */
 public class FiltroButterworthPasaBajas extends FiltroFrecuencia{
 

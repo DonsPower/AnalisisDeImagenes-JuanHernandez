@@ -5,7 +5,11 @@
  */
 package frecuencias;
 
+import GUI.JFrameImagen;
 import frecuencias.HerramientasColor.CanalColor;
+import io.ImageManager;
+import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +93,7 @@ public BufferedImage obtenerImagenFrecuencias(boolean reAjustarCuadrante) {
   
   
   //El otro método
-   public BufferedImage obtenerImagenEspacial() {
+ public BufferedImage obtenerImagenEspacial() {
         /// obtenemos las dimensiones
         int anchoImagen = this.imagenOriginal.getWidth();
         int altoImagen = this.imagenOriginal.getHeight();
@@ -107,20 +111,17 @@ public BufferedImage obtenerImagenFrecuencias(boolean reAjustarCuadrante) {
                 for (int x = 0; x < aux.getWidth(); x++) {
 
                     int color = (int) Math.abs(transformadaInv[x][y].getReal());
-                  
-                     System.out.println(color+"\n");
-                    color = (int)Expansion.validarRango(color);
+                    color =(int)Expansion.validarRango(color);
                     color = HerramientasColor.obtenerRGBporCanal(color, canal);
 
                     int rgb = HerramientasColor.acumularColor(aux.getRGB(x, y), color);
-                    
                     aux.setRGB(x, y, rgb);
                 }
             }
         }
         return aux;
 
-    }
+}
    public  BufferedImage mult(){
      
         int anchoImagen = this.imagenOriginal.getWidth();
@@ -156,5 +157,62 @@ public BufferedImage obtenerImagenFrecuencias(boolean reAjustarCuadrante) {
         }
         return aux;
    }
+     public void aplicarFiltro(NumeroComplejo[][] matrizFiltro) {
+        // Se obtienen las dimensiones de la matriz de complejos del filtro
+        int ancho = matrizFiltro.length;
+        int alto = matrizFiltro[0].length;
+        
+        for (int i = 0; i < ancho; i++) {
+            for (int j = 0; j < alto; j++) {
+                // Obtener el RGB de la representación en frecuencias.
+                //if(matrizFiltro[i][j].getReal() < 1) {
+                    //System.out.println(matrizFiltro[i][j].getReal());
+                    int rgb = obtenerPixelDominioFrecuencias(i, j, true);
+                    Color aux = new Color(rgb);
+                    int r = (int) (aux.getRed() * matrizFiltro[i][j].getReal());
+                    int g = (int) (aux.getGreen() * matrizFiltro[i][j].getReal());
+                    int b = (int) (aux.getBlue() * matrizFiltro[i][j].getReal());
+                    r = (int) Expansion.validarRango(r);
+                    g = (int) Expansion.validarRango(g);
+                    b = (int) Expansion.validarRango(b);
+                    aux = new Color(r, g, b);
+                    setPixelDominioFrecuencias(i, j, true, aux.getRGB());
+                //}
+            }
+        }
+    }
     
+    private int obtenerPixelDominioFrecuencias(int i, int j, boolean encuadre) {
+        // obtener las dimensiones de la imagen original
+        int ancho = this.imagenOriginal.getWidth();
+        int alto = this.imagenOriginal.getHeight();
+        // Modificamos la posición de los cuadrantes
+        int ejeX = encuadre ? (i + (ancho / 2)) % ancho : i;
+        int ejeY = encuadre ? (j + (alto / 2)) % alto : j;
+        // Acumulamos por cada canal
+        int valorColor = 0;
+        for (CanalColor canal: CanalColor.values()) {
+            // se obtiene la matriz para el canal actual
+            NumeroComplejo[][] aux = this.representacionFrecuencias.get(canal);
+            valorColor += obtenerColorRealDeFrecuencia(ejeX, ejeY, aux, canal);
+        }
+        
+        return valorColor;
+    }
+
+    private void setPixelDominioFrecuencias(int x, int y, boolean encuadre, int color) {
+        // Se obtienen las dimensiones
+        int anchoImagen = this.imagenOriginal.getWidth();
+        int altoImagen = this.imagenOriginal.getHeight();
+        // Modificamos la posición de los cuadrantes
+        int ejeX = encuadre ? (x + (anchoImagen / 2)) % anchoImagen : x;
+        int ejeY = encuadre ? (x + (altoImagen / 2)) % altoImagen : y;
+        // Recorrer por canal de color
+        for (CanalColor canal : CanalColor.values()) {
+            NumeroComplejo[][] datos = this.representacionFrecuencias.get(canal);
+            int nuevoRGB = HerramientasColor.obtenerValorPorCanal(color, canal);
+            datos[ejeX][ejeY] = new NumeroComplejo(nuevoRGB, nuevoRGB);
+        }
+    }
+  
 }

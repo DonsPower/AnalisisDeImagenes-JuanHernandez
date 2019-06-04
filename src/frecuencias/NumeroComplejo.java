@@ -7,7 +7,7 @@ package frecuencias;
 
 /**
  *
- * @author Roberto Cruz Leija
+ * @author Dons     
  */
 public class NumeroComplejo {
     

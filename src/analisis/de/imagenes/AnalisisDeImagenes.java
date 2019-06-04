@@ -11,6 +11,9 @@ import static Expansion.expansionImage.expansionLogaritmica;
 import static Expansion.expansionImage.miExpansion;
 import GUI.JFrameImagen;
 import frecuencias.FFTCalculo;
+import frecuencias.FiltroButterworthPasaBajas;
+import frecuencias.FiltroExponencialPasaBajas;
+import frecuencias.FiltroIdealPasaAltas;
 import frecuencias.FiltroIdealPasaBajas;
 import frecuencias.Gestor;
 import io.ImageManager;
@@ -33,18 +36,18 @@ public class AnalisisDeImagenes {
 //          FILTROS PASABAJAS Y PASAALTAS.
 
        BufferedImage bi = ImageManager.toBufferedImage(ImageManager.openImage());
-         JFrameImagen frame1 = new JFrameImagen(bi);  
-         
-         Gestor gestor = new Gestor(bi);
-         FiltroIdealPasaBajas al=new FiltroIdealPasaBajas(512,512,50);
-         al.generar();
-         FFTCalculo fft = new FFTCalculo();
-         System.out.println();
-         JFrameImagen frame2 = new JFrameImagen(ImageManager.toImage(gestor.obtenerImagenFrecuencias(true)));  
-          JFrameImagen frame3 = new JFrameImagen(ImageManager.toImage(gestor.obtenerImagenEspacial()));
-        
-        
-        
+        Gestor gestor = new Gestor(bi);
+        JFrameImagen frame = new JFrameImagen(ImageManager.toImage(bi));
+        JFrameImagen frame1 = new JFrameImagen(ImageManager.toImage(gestor.obtenerImagenFrecuencias(false)));
+        FiltroIdealPasaAltas filtro = new FiltroIdealPasaAltas(512, 512, 40);
+        //FiltroButterworthPasaBajas filtro= new FiltroButterworthPasaBajas(512,512, 50,3);
+          //FiltroExponencialPasaBajas filtro= new FiltroExponencialPasaBajas(512,512,50,3);
+          //FiltroIdealPasaBajas filtro = new FiltroIdealPasaBajas(512, 512, 100);
+       // FiltroTrapezoidal filtro = new FiltroTrapezoidal(512, 512, 5, 50);
+        filtro.generar();
+        gestor.aplicarFiltro( filtro.getMatriz());
+        JFrameImagen frame2 = new JFrameImagen(filtro.toImage());
+        JFrameImagen frame3 = new JFrameImagen(ImageManager.toImage(gestor.obtenerImagenEspacial()));
         
         
         //Agregacion de la convoluciojn
